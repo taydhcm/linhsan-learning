@@ -8,8 +8,13 @@ Luồng:
   4. Trả về list cặp {question, explanation}
 """
 
+import time
+
 from agents.viet_question_generator import VietQuestionGenerator
 from agents.viet_answer_explainer import VietAnswerExplainer
+
+# Khoảng nghỉ giữa các lần gọi Agent 2 để tránh vượt TPM rate limit (12k/phút)
+_DELAY_BETWEEN_CALLS = 5  # giây
 
 
 class OrchestratorViet:
@@ -32,7 +37,11 @@ class OrchestratorViet:
         questions = self.generator.generate(topic)
         results = []
 
-        for question in questions:
+        for i, question in enumerate(questions):
+            # Thêm delay giữa các lần gọi để tránh vượt TPM rate limit
+            if i > 0:
+                time.sleep(_DELAY_BETWEEN_CALLS)
+
             try:
                 explanation = self.explainer.explain(question)
             except RuntimeError:

@@ -15,6 +15,7 @@ Output schema:
 
 import os
 import json
+import time
 from groq import Groq
 from jinja2 import Environment, FileSystemLoader
 
@@ -86,9 +87,17 @@ class VietAnswerExplainer:
 
                 return explanation
 
-            except (json.JSONDecodeError, ValueError) as exc:
+            except Exception as exc:
                 last_error = exc
-                continue  # Thử lại
+                err_str = str(exc)
+                # Rate limit (429): chờ trước khi thử lại
+                if "429" in err_str or "rate_limit" in err_str.lower():
+                    wait = 10 * (attempt + 1)  # 10s, 20s, 30s
+                    time.sleep(wait)
+                elif isinstance(exc, (json.JSONDecodeError, ValueError)):
+                    pass  # thử lại ngay
+                else:
+                    raise  # lỗi khác → không retry
 
         raise RuntimeError(
             f"Agent 2 TV (VietAnswerExplainer) thất bại sau {LLM_MAX_RETRIES} lần thử. "

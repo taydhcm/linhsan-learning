@@ -236,7 +236,7 @@ with tab_viet:
     if start_viet or retry_viet:
         st.session_state["viet_results"] = None
         st.session_state["viet_topic_current"] = selected_viet_topic
-        with st.spinner("🤖 AI đang tạo câu hỏi và lời giải thích... (khoảng 20–40 giây)"):
+        with st.spinner("🤖 AI đang tạo câu hỏi và lời giải thích... (khoảng 60–90 giây, vui lòng chờ!)"):
             try:
                 st.session_state["viet_results"] = OrchestratorViet().run(selected_viet_topic)
             except Exception as exc:
