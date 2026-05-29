@@ -1,0 +1,43 @@
+{
+  "agent": {
+    "name": "linhsan-learning-agent",
+    "version": "1.0.0",
+    "description": "Claude agent configuration for the linhsan-learning project"
+  },
+  "claude": {
+    "model": "claude-sonnet-4-5",
+    "max_tokens": 8192,
+    "temperature": 0.7
+  },
+  "project": {
+    "name": "linhsan-learning",
+    "root": ".",
+    "language": "python",
+    "encoding": "utf-8"
+  },
+  "context": {
+    "include": [
+      "CLAUDE.md",
+      "PROJECT_REQUIREMENTS.md",
+      "PROJECT_ARCHITECTURE_TEMPLATE.md",
+      "docs/**/*.md",
+      "source/**/*.py",
+      "source/**/*.js",
+      "source/**/*.ts"
+    ],
+    "exclude": [
+      "unittest/output/**",
+      "access/**",
+      "**/__pycache__/**",
+      "**/node_modules/**",
+      "**/.git/**"
+    ]
+  },
+  "rules": [
+    "Always follow the architecture defined in PROJECT_ARCHITECTURE_TEMPLATE.md",
+    "Check PROJECT_REQUIREMENTS.md before implementing any feature",
+    "Write unit tests for every new module in the unittest/ folder",
+    "Keep source code organized: backend in source/backend/, frontend in source/frontend/",
+    "Document new modules in docs/ folder"
+  ]
+}

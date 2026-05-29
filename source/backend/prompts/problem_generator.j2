@@ -1,0 +1,34 @@
+Bạn là một giáo viên toán lớp 4 giỏi nhất Việt Nam, chuyên tạo bài tập phù hợp với học sinh 9–10 tuổi.
+
+Hãy tạo ĐÚNG {{ num_problems }} bài toán về chủ đề: **{{ topic.name }}**
+
+Kiến thức cần bao phủ trong các bài toán:
+{% for k in topic.knowledge %}
+- {{ k }}
+{% endfor %}
+
+Yêu cầu bắt buộc:
+1. Phải có đủ 3 cấp độ tư duy (mỗi cấp ít nhất 2 bài):
+   - "biết": nhận biết, đọc/viết, tính trực tiếp theo công thức
+   - "hiểu": giải thích tại sao, chuyển đổi, so sánh, chứng minh
+   - "vận_dụng": bài toán có lời văn, tình huống thực tế, kết hợp nhiều bước
+2. Ngôn ngữ đơn giản, gần gũi với trẻ em Việt Nam 9–10 tuổi
+3. Số trong bài không quá lớn, phù hợp chương trình lớp 4
+4. Tình huống thực tế: dùng đồ vật quen thuộc (kẹo, táo, tiền, bút chì, học sinh...)
+5. Mỗi bài có một gợi ý ngắn (hint) KHÔNG tiết lộ đáp án
+
+Trả về ĐÚNG định dạng JSON array sau, không thêm bất kỳ text nào khác bên ngoài JSON:
+[
+  {
+    "id": 1,
+    "level": "biết",
+    "question": "Nội dung bài toán đầy đủ, rõ ràng...",
+    "hint": "Gợi ý ngắn gọn giúp bé biết hướng suy nghĩ..."
+  },
+  {
+    "id": 2,
+    "level": "hiểu",
+    "question": "...",
+    "hint": "..."
+  }
+]

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tổng quan dự án - linhsan-learning</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 0 24px; line-height: 1.7; color: #2c3e50; background: #f8fafc; }
+    h1 { color: #1a73e8; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; font-size: 1.8em; }
+    h2 { color: #2c3e50; margin-top: 36px; font-size: 1.25em; border-left: 4px solid #1a73e8; padding-left: 12px; }
+    h3 { color: #555; margin-top: 20px; font-size: 1em; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    th, td { border: 1px solid #e0e7ef; padding: 10px 14px; text-align: left; font-size: 0.93em; }
+    th { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
+    tr:hover td { background: #f0f7ff; }
+    .badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; }
+    .todo     { background: #fff3cd; color: #856404; }
+    .done     { background: #d4edda; color: #155724; }
+    .inprogress { background: #cce5ff; color: #004085; }
+    .p0 { background: #f8d7da; color: #721c24; }
+    .p1 { background: #fff3cd; color: #856404; }
+    .p2 { background: #d4edda; color: #155724; }
+    .section-box { background: #fff; border-radius: 10px; padding: 20px 24px; margin: 20px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .arch-diagram { background: #1e2a3a; color: #a8d8ea; font-family: monospace; font-size: 0.85em; padding: 20px; border-radius: 8px; line-height: 1.6; overflow-x: auto; }
+    code { background: #eef2ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; font-size: 0.88em; }
+    .topic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 16px 0; }
+    .topic-card { background: #fff; border: 2px solid #e0e7ef; border-radius: 10px; padding: 14px 16px; }
+    .topic-card .tid { font-size: 0.75em; color: #888; font-weight: 600; text-transform: uppercase; }
+    .topic-card .tname { font-weight: 700; color: #1a73e8; margin: 4px 0; }
+    .topic-card .tdesc { font-size: 0.85em; color: #666; }
+    a { color: #1a73e8; }
+    ul { margin: 8px 0; padding-left: 20px; }
+    li { margin: 4px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>🧮 linhsan-learning — AI Math Tutor cho lớp 4</h1>
+
+  <div class="section-box">
+    <h2>Mô tả dự án</h2>
+    <p>
+      <strong>linhsan-learning</strong> là ứng dụng web học toán thông minh dành cho <strong>học sinh lớp 4 Việt Nam (9–10 tuổi)</strong>,
+      triển khai trên <strong>Streamlit Community Cloud</strong>.
+      Người dùng chọn một chủ đề toán → hệ thống dùng <strong>2 AI Agent</strong> để tự động sinh bài toán
+      và giải thích lời giải theo cách một bé 5 tuổi có thể hiểu được.
+    </p>
+    <p>Quy mô: <strong>nhỏ, 1–2 người dùng</strong> — không cần database, không cần auth.</p>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <h2>Kiến trúc hệ thống</h2>
+  <div class="arch-diagram">
+User chọn chủ đề
+      │
+      ▼
+┌─────────────────────────────────────────────┐
+│           STREAMLIT APP (app.py)             │
+│                                             │
+│  [UI Layer]  ──▶  [Orchestrator]            │
+│                        │                   │
+│               1. Agent 1: Problem Generator │
+│                  → JSON list bài toán       │
+│               2. Agent 2: Solution Explainer│
+│                  → JSON lời giải từng bài   │
+│                        │                   │
+│  [UI Layer]  ◀──  render kết quả           │
+└─────────────────────────┬───────────────────┘
+                          │ Groq SDK (HTTP)
+                   ┌──────▼───────────────────┐
+                   │  Groq Cloud API           │
+                   │  llama-3.3-70b-versatile  │
+                   └──────────────────────────┘
+  </div>
+
+  <!-- 7 CHỦ ĐỀ -->
+  <h2>7 Chủ đề toán lớp 4</h2>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tid">T1</div>
+      <div class="tname">Số tự nhiên</div>
+      <div class="tdesc">Đọc/viết số đến 1 000 000, so sánh, làm tròn số</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T2</div>
+      <div class="tname">Bốn phép tính số tự nhiên</div>
+      <div class="tdesc">Cộng/Trừ/Nhân/Chia; thứ tự phép tính; biểu thức</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T3</div>
+      <div class="tname">Phân số — Khái niệm & tính chất</div>
+      <div class="tdesc">Rút gọn, quy đồng, so sánh phân số</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T4</div>
+      <div class="tname">Bốn phép tính phân số</div>
+      <div class="tdesc">Cộng/Trừ/Nhân/Chia phân số; hỗn số</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T5</div>
+      <div class="tname">Hình học</div>
+      <div class="tdesc">Góc, hình bình hành, hình thoi, hình thang — chu vi & diện tích</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T6</div>
+      <div class="tname">Đo lường</div>
+      <div class="tdesc">Quy đổi đơn vị độ dài, diện tích, khối lượng, thời gian</div>
+    </div>
+    <div class="topic-card">
+      <div class="tid">T7</div>
+      <div class="tname">Toán có lời văn</div>
+      <div class="tdesc">Tổng–Hiệu, Tổng–Tỉ, trung bình cộng, bài toán thực tế</div>
+    </div>
+  </div>
+
+  <!-- TODO LIST -->
+  <h2>Danh sách TODO — Hiện thực hóa sản phẩm</h2>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Module / Hạng mục</th>
+      <th>Mô tả chi tiết</th>
+      <th>Ưu tiên</th>
+      <th>Trạng thái</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td><strong>Setup project Streamlit</strong></td>
+      <td>Tạo <code>app.py</code>, cấu trúc thư mục, <code>requirements.txt</code>, <code>.env.example</code></td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Cấu hình LLM API</strong></td>
+      <td>Tích hợp Groq SDK (<code>pip install groq</code>); đọc <code>GROQ_API_KEY</code> từ <code>st.secrets</code> (prod) / <code>.env</code> (dev); config model trong <code>config.py</code></td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>topics.py — Danh sách chủ đề</strong></td>
+      <td>Định nghĩa 7 chủ đề + danh sách kiến thức cần bao phủ cho mỗi chủ đề</td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>UI chọn chủ đề</strong></td>
+      <td>Dropdown/card chọn 1 trong 7 chủ đề; nút "Bắt đầu học"; disable khi đang xử lý</td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>Agent 1 — Problem Generator</strong></td>
+      <td>Prompt engineering: sinh 5–8 bài toán theo chủ đề, đủ 3 cấp độ (Biết/Hiểu/Vận dụng), output JSON</td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>Agent 2 — Solution Explainer</strong></td>
+      <td>Prompt engineering: nhận bài toán → giải + giải thích kiểu trẻ em; output JSON có steps, answer, skill_note</td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>Orchestrator / Pipeline</strong></td>
+      <td>Kết nối 2 agent: output Agent 1 → input Agent 2; retry 3 lần nếu JSON lỗi; xử lý timeout</td>
+      <td><span class="badge p0">🔴 P0</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>Hiển thị kết quả UI</strong></td>
+      <td>Render bài toán + lời giải dạng expander/card; thân thiện trẻ em (emoji, màu sắc); ẩn/hiện lời giải</td>
+      <td><span class="badge p1">🟡 P1</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>Session state & UX</strong></td>
+      <td>Lưu kết quả trong <code>st.session_state</code>; nút "Tạo lại"; spinner khi chờ LLM</td>
+      <td><span class="badge p1">🟡 P1</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>Unit test agents</strong></td>
+      <td>Test prompt output hợp lệ; test pipeline end-to-end; mock LLM calls bằng <code>unittest.mock</code></td>
+      <td><span class="badge p1">🟡 P1</span></td>
+      <td><span class="badge done">✅ DONE</span></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><strong>Deploy Streamlit Cloud</strong></td>
+      <td>Push lên GitHub; kết nối Streamlit Community Cloud; cấu hình <code>GROQ_API_KEY</code> trong Secrets</td>
+      <td><span class="badge p2">🟢 P2</span></td>
+      <td><span class="badge todo">TODO</span></td>
+    </tr>
+  </table>
+
+  <!-- HƯỚNG DẪN AI -->
+  <h2>Hướng dẫn Claude implement từng module</h2>
+  <div class="section-box">
+    <h3>Quy trình chuẩn</h3>
+    <ol>
+      <li>Đọc <code>PROJECT_REQUIREMENTS.md</code> — nắm user story và acceptance criteria của module cần làm.</li>
+      <li>Đọc <code>CLAUDE.md</code> — xem kiến trúc tổng thể, vị trí file trong cây thư mục.</li>
+      <li>Implement code tại <code>source/backend/</code> — đúng module, đúng class/function.</li>
+      <li>Viết unit test tại <code>unittest/backend/</code> — mock LLM, không gọi API thật.</li>
+      <li>Cập nhật cột <strong>Trạng thái</strong> trong bảng TODO ở trên thành <span class="badge done">DONE</span>.</li>
+    </ol>
+
+    <h3>Quy tắc bắt buộc</h3>
+    <ul>
+      <li><strong>API key:</strong> Chỉ đọc từ <code>st.secrets["GROQ_API_KEY"]</code> hoặc <code>os.environ["GROQ_API_KEY"]</code> — không bao giờ hard-code.</li>
+      <li><strong>JSON output LLM:</strong> Luôn dùng <code>try/except json.JSONDecodeError</code>, có fallback message.</li>
+      <li><strong>Prompt:</strong> Template đặt trong <code>source/backend/prompts/*.j2</code>, không nhúng thẳng vào code.</li>
+      <li><strong>Test:</strong> Dùng <code>unittest.mock.patch</code> để mock Groq client — không tốn API credit.</li>
+    </ul>
+  </div>
+
+  <!-- STACK -->
+  <h2>Stack công nghệ</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Lý do chọn</th></tr>
+    <tr><td>UI + App</td><td>Python / Streamlit ≥ 1.35</td><td>All-in-one, deploy cloud miễn phí</td></tr>
+    <tr><td>LLM Provider</td><td>Groq Cloud (console.groq.com)</td><td>Miễn phí, siêu nhanh nhờ LPU chip</td></tr>
+    <tr><td>LLM Model chính</td><td><code>llama-3.3-70b-versatile</code></td><td>Chất lượng cao, tiếng Việt tốt, context 128k</td></tr>
+    <tr><td>LLM Model nhẹ</td><td><code>llama-3.1-8b-instant</code></td><td>Dự phòng khi cần tiết kiệm quota</td></tr>
+    <tr><td>Prompt</td><td>Jinja2 templates (.j2)</td><td>Dễ chỉnh, tách rời khỏi logic</td></tr>
+    <tr><td>State</td><td><code>st.session_state</code></td><td>Không cần DB cho 1–2 user</td></tr>
+    <tr><td>Secrets</td><td><code>st.secrets</code> / <code>python-dotenv</code></td><td>Bảo mật API key</td></tr>
+    <tr><td>Test</td><td>pytest + unittest.mock</td><td>Mock LLM, test offline</td></tr>
+    <tr><td>Deploy</td><td>Streamlit Community Cloud</td><td>Free, gắn GitHub repo</td></tr>
+  </table>
+
+  <!-- LINKS -->
+  <h2>Tài liệu liên quan</h2>
+  <ul>
+    <li><a href="../CLAUDE.md">CLAUDE.md</a> — Tổng quan dự án, kiến trúc, prompt strategy, deploy</li>
+    <li><a href="../PROJECT_REQUIREMENTS.md">PROJECT_REQUIREMENTS.md</a> — User stories, schema, NFR, Definition of Done</li>
+    <li><a href="../PROJECT_ARCHITECTURE_TEMPLATE.md">PROJECT_ARCHITECTURE_TEMPLATE.md</a> — Template tái tạo cấu trúc dự án</li>
+    <li><a href="guide.md">docs/guide.md</a> — Hướng dẫn phát triển module chi tiết</li>
+  </ul>
+
+  <hr style="margin-top:40px; border:none; border-top:1px solid #e0e7ef;">
+  <p style="color:#999; font-size:0.82em;">Cập nhật lần cuối: 2026-05-29 | linhsan-learning v2.0.0 | ✅ 10/11 bước DONE — chỉ còn Deploy</p>
+
+</body>
+</html>
