@@ -11,8 +11,8 @@
 | Thuộc tính        | Giá trị                                                            |
 |-------------------|--------------------------------------------------------------------|
 | Tên dự án         | linhsan-learning                                                   |
-| Loại              | AI-powered Math Learning App (2 Agents)                            |
-| Phiên bản         | 1.0.0                                                              |
+| Loại              | AI-powered Learning App — Toán + Tiếng Việt (2 Agents mỗi môn)    |
+| Phiên bản         | 3.0.0 (Tiếng Việt module — planning)                              |
 | Đối tượng sử dụng | Học sinh lớp 4 Việt Nam (9–10 tuổi), phụ huynh hỗ trợ             |
 | Quy mô            | Nhỏ, 1–2 người dùng đồng thời                                      |
 | Phạm vi           | Web app đơn trang, deploy trên Streamlit Community Cloud           |
@@ -22,14 +22,15 @@
 
 ## 2. Yêu cầu chức năng
 
-### 2.1 UI — Chọn chủ đề học
+### 2.1 UI — Tab chọn môn học
 
 | ID | User Story | Tiêu chí nghiệm thu |
 |----|------------|---------------------|
-| UI-01 | Người dùng muốn xem danh sách 7 chủ đề toán lớp 4 để chọn | Hiển thị đủ 7 chủ đề với mô tả ngắn, giao diện thân thiện |
+| UI-00 | Người dùng muốn chọn học Toán hoặc Tiếng Việt | 2 tab rõ ràng (🧮 Toán / 📖 Tiếng Việt), chuyển tab không mất dữ liệu session |
+| UI-01 | Người dùng muốn xem danh sách 7 chủ đề toán/TV lớp 4 để chọn | Hiển thị đủ 7 chủ đề với mô tả ngắn, giao diện thân thiện |
 | UI-02 | Người dùng muốn chọn 1 chủ đề và nhấn "Bắt đầu học" | Nút rõ ràng, disable khi đang xử lý, có loading indicator |
-| UI-03 | Người dùng muốn tạo lại bộ bài toán mới cho cùng chủ đề | Nút "Tạo lại" xuất hiện sau khi có kết quả đầu tiên |
-| UI-04 | Người dùng muốn xem lời giải của từng bài (có thể ẩn/hiện) | Accordion/expander cho từng bài, mặc định ẩn lời giải |
+| UI-03 | Người dùng muốn tạo lại bộ câu hỏi/bài toán mới cho cùng chủ đề | Nút "Tạo lại" xuất hiện sau khi có kết quả đầu tiên |
+| UI-04 | Người dùng muốn xem lời giải (có thể ẩn/hiện) | Accordion/expander cho từng bài, mặc định thu gọn để bé tự làm trước |
 
 ### 2.2 Agent 1 — Problem Generator (Tạo bài toán)
 
@@ -88,6 +89,59 @@
 | ORC-03 | Lỗi LLM (timeout, rate limit) được xử lý gracefully | Hiển thị thông báo thân thiện, có nút thử lại |
 | ORC-04 | Retry tối đa 3 lần khi LLM trả về output không hợp lệ | Sau 3 lần thất bại mới báo lỗi cho user |
 
+---
+
+## 2B. Yêu cầu chức năng — Module Tiếng Việt (v3.0 — mới)
+
+### 2B.1 Agent 1 TV — Question Generator (Tạo câu hỏi Tiếng Việt)
+
+| ID | User Story | Tiêu chí nghiệm thu |
+|----|------------|---------------------|
+| TV1-01 | Hệ thống sinh ra 6 câu hỏi ôn tập khi người dùng chọn chủ đề TV | Đúng số lượng, đúng chủ đề, không lặp |
+| TV1-02 | Câu hỏi phải bao phủ đủ 3 cấp độ: Nhận biết / Thông hiểu / Vận dụng | Mỗi cấp độ ít nhất 1 câu, có nhãn level rõ ràng |
+| TV1-03 | Câu hỏi đa dạng dạng: trắc nghiệm, tự luận, điền chỗ trống | Field `type` phân biệt rõ dạng câu hỏi |
+| TV1-04 | Câu hỏi chuẩn ngôn ngữ, phù hợp SGK lớp 4 | Reviewer xác nhận phù hợp chương trình |
+| TV1-05 | Output là JSON hợp lệ, có gợi ý (hint) không tiết lộ đáp án | `json.loads()` không throw exception; hint có tác dụng định hướng |
+
+**Output schema Agent 1 TV:**
+```json
+[
+  {
+    "id": 1,
+    "level": "nhận_biết | thông_hiểu | vận_dụng",
+    "type": "trắc_nghiệm | tự_luận | điền_chỗ_trống",
+    "question": "Nội dung câu hỏi...",
+    "hint": "Gợi ý ngắn..."
+  }
+]
+```
+
+### 2B.2 Agent 2 TV — Answer Explainer (Giải thích đáp án Tiếng Việt)
+
+| ID | User Story | Tiêu chí nghiệm thu |
+|----|------------|---------------------|
+| TV2-01 | Với mỗi câu hỏi, hệ thống sinh giải thích đáp án chi tiết từng bước | Đủ số bước, không bỏ qua bước nào |
+| TV2-02 | Giải thích dùng ngôn ngữ trẻ em hiểu được (như nói chuyện với bé 5 tuổi) | Không có thuật ngữ hàn lâm; dùng hình ảnh thực tế quen thuộc |
+| TV2-03 | Định hình tư duy ngôn ngữ: giải thích "tại sao", so sánh đúng/sai | Field `skill_note` chứa kỹ năng TV cụ thể bé học được |
+| TV2-04 | Đáp án đúng về mặt ngôn ngữ và kiến thức TV lớp 4 | Reviewer (giáo viên) xác nhận chính xác |
+| TV2-05 | Output là JSON hợp lệ | `json.loads()` không throw exception; có fallback khi parse lỗi |
+
+**Output schema Agent 2 TV:**
+```json
+{
+  "question_id": 1,
+  "read_question": "Bài này hỏi mình nhận biết được...",
+  "thinking_direction": "Chúng mình sẽ làm thế này nhé...",
+  "steps": [
+    "Bước 1: ...",
+    "Bước 2: ..."
+  ],
+  "answer": "Đáp án là...",
+  "explanation": "Giải thích bằng hình ảnh quen thuộc...",
+  "skill_note": "Kỹ năng Tiếng Việt học được từ bài này..."
+}
+```
+
 ### 2.5 Session State & UX
 
 | ID | User Story | Tiêu chí nghiệm thu |
@@ -140,7 +194,7 @@
 
 ---
 
-## 5. Danh sách 7 chủ đề toán lớp 4
+## 5. Danh sách 7 chủ đề Toán lớp 4
 
 | ID | Tên chủ đề | Kiến thức cần bao phủ |
 |----|------------|----------------------|
@@ -151,6 +205,20 @@
 | T5 | Hình học | Góc nhọn/tù/vuông/bẹt; hình bình hành, hình thoi, hình thang — chu vi & diện tích |
 | T6 | Đo lường | Quy đổi đơn vị độ dài, diện tích (ha, km²), khối lượng, thời gian |
 | T7 | Toán có lời văn | Bài toán Tổng–Hiệu; Tổng–Tỉ; trung bình cộng; bài toán thực tế |
+
+---
+
+## 5B. Danh sách 7 chủ đề Tiếng Việt lớp 4 (v3.0 — mới)
+
+| ID | Tên chủ đề | Kỹ năng cần bao phủ |
+|----|------------|---------------------|
+| V1 | Tập đọc — Đọc hiểu | Tìm ý chính, nhân vật, thái độ tác giả, chi tiết quan trọng |
+| V2 | Từ loại | Danh từ/Động từ/Tính từ/Đại từ — nhận biết, phân loại, đặt câu |
+| V3 | Cấu tạo từ | Từ đơn, từ ghép (tổng hợp/phân loại), từ láy (âm/vần/tiếng) |
+| V4 | Cấu tạo câu | Chủ ngữ–Vị ngữ–Trạng ngữ; câu kể/hỏi/cảm/khiến; dấu câu |
+| V5 | Chính tả | Phân biệt l/n, r/d/gi, s/x, ch/tr; viết hoa danh từ riêng |
+| V6 | Văn kể chuyện | Cấu trúc 3 phần, xây dựng nhân vật, diễn biến, kết thúc |
+| V7 | Văn miêu tả | Tả đồ vật/cây cối/con vật; trình tự quan sát; dùng so sánh, nhân hóa |
 
 ---
 
@@ -173,3 +241,4 @@ Một module/chức năng được coi là **DONE** khi:
 |-----------|------------|-------------------------------------------------------|
 | 1.0.0     | 2026-05-29 | Khởi tạo tài liệu — E-learning platform chung         |
 | 2.0.0     | 2026-05-29 | Rewrite toàn bộ — AI 2-agent Math learning cho lớp 4  |
+| 3.0.0     | 2026-05-29 | Bổ sung module Tiếng Việt — 2 agents + 7 chủ đề TV   |
