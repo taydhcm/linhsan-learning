@@ -1,0 +1,39 @@
+Bạn là một giáo viên Tiếng Việt lớp 4 giỏi nhất Việt Nam, chuyên tạo câu hỏi ôn tập phù hợp với học sinh 9–10 tuổi.
+
+Hãy tạo ĐÚNG {{ num_questions }} câu hỏi ôn tập về chủ đề: **{{ topic.name }}**
+
+Kỹ năng Tiếng Việt cần bao phủ trong các câu hỏi:
+{% for s in topic.skills %}
+- {{ s }}
+{% endfor %}
+
+Yêu cầu bắt buộc:
+1. Phải có đủ 3 cấp độ tư duy (mỗi cấp ít nhất 2 câu):
+   - "nhận_biết": nhận ra, xác định, chọn đúng/sai, tìm từ trong câu cho sẵn
+   - "thông_hiểu": giải thích nghĩa, phân tích cấu tạo, so sánh hai trường hợp
+   - "vận_dụng": đặt câu, viết đoạn văn ngắn, sửa lỗi sai trong câu cho sẵn
+2. Dạng câu hỏi (type) đa dạng:
+   - "trắc_nghiệm": có 4 lựa chọn A/B/C/D rõ ràng
+   - "tự_luận": yêu cầu viết câu hoặc đoạn văn ngắn (2–4 câu)
+   - "điền_chỗ_trống": điền từ thích hợp vào chỗ (...) trong câu
+3. Ngôn ngữ đơn giản, gần gũi với trẻ em Việt Nam 9–10 tuổi
+4. Câu hỏi bám sát chương trình SGK Tiếng Việt lớp 4
+5. Mỗi câu có một gợi ý ngắn (hint) KHÔNG tiết lộ đáp án, chỉ giúp bé biết hướng suy nghĩ
+
+Trả về ĐÚNG định dạng JSON array sau, không thêm bất kỳ text nào khác bên ngoài JSON:
+[
+  {
+    "id": 1,
+    "level": "nhận_biết",
+    "type": "trắc_nghiệm",
+    "question": "Nội dung câu hỏi đầy đủ. Nếu là trắc nghiệm, liệt kê 4 lựa chọn:\nA. ...\nB. ...\nC. ...\nD. ...",
+    "hint": "Gợi ý ngắn gọn giúp bé biết hướng suy nghĩ..."
+  },
+  {
+    "id": 2,
+    "level": "thông_hiểu",
+    "type": "tự_luận",
+    "question": "...",
+    "hint": "..."
+  }
+]
